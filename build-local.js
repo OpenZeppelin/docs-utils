@@ -9,6 +9,7 @@ const proc = require('child_process');
 const crypto = require('crypto');
 const yaml = require('js-yaml');
 const findUp = require('find-up');
+const chokidar = require('chokidar');
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
 const {
@@ -58,11 +59,30 @@ if (fs.existsSync(docsDir)) {
   fs.symlinkSync(path.resolve('build'), path.join(docsDir, 'build'));
 }
 
+const playbook = getPlaybook();
+
 if (command === 'build') {
-  proc.spawnSync('npm', ['run', 'build:custom', getPlaybook()], {
-    cwd: docsDir,
-    stdio: 'inherit',
-  });
+  build();
+
+} else if (command === 'watch') {
+  // We will manually run prepare-docs on changes.
+  process.env.DISABLE_PREPARE_DOCS = 'true';
+
+  chokidar.watch(args).on('all', debounce(() => {
+    proc.spawnSync('npm', ['run', 'prepare-docs'], {
+      stdio: 'inherit',
+    });
+  }, 500));
+
+  chokidar.watch(['**/*.yml', '**/*.adoc'], {
+    cwd: component,
+  }).on('all', debounce(() => {
+    build();
+  }, 500));
+
+} else {
+  console.error(`Unknown command ${command}`);
+  process.exit(1);
 }
 
 function getPlaybook() {
@@ -103,5 +123,22 @@ function getDocsRevision() {
   return proc.execFileSync('git', [ 'rev-parse', 'HEAD' ], {
     cwd: docsDir,
     encoding: 'utf8',
+  });
+}
+
+function debounce(fn, delay) {
+  let timeout;
+  return function () {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      fn.apply(this);
+    }, delay);;
+  }
+}
+
+function build() {
+  proc.spawnSync('npm', ['run', 'build:custom', playbook], {
+    cwd: docsDir,
+    stdio: 'inherit',
   });
 }

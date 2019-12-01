@@ -8,6 +8,7 @@
     "oz-docs": "build-local.js"
   },
   "dependencies": {
+    "chokidar": "^3.3.0",
     "env-paths": "^2.2.0",
     "find-up": "^4.1.0",
     "js-yaml": "^3.13.1",
