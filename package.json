@@ -8,9 +8,11 @@
     "oz-docs": "build-local.js"
   },
   "dependencies": {
+    "chalk": "^3.0.0",
     "chokidar": "^3.3.0",
     "env-paths": "^2.2.0",
     "find-up": "^4.1.0",
+    "http-server": "^0.12.0",
     "js-yaml": "^3.13.1",
     "minimist": "^1.2.0"
   }

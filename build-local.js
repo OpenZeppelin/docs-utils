@@ -10,10 +10,11 @@ const crypto = require('crypto');
 const yaml = require('js-yaml');
 const findUp = require('find-up');
 const chokidar = require('chokidar');
+const chalk = require('chalk');
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
 const {
-  c: component = '.',
+  c: componentDir = '.',
   _: [ command = 'build', ...args ],
 } = require('minimist')(process.argv.slice(2));
 
@@ -64,20 +65,34 @@ const playbook = getPlaybook();
 if (command === 'build') {
   build();
 
+  console.error('The site is available at ./build/site');
+
 } else if (command === 'watch') {
+  const port = '8080';
+
+  const server = proc.spawn(
+    require.resolve('http-server/bin/http-server'),
+    [ '-c-1', `-p${port}`, 'build/site' ],
+  );
+
+  process.on('exit', () => server.kill());
+
   // We will manually run prepare-docs on changes.
   process.env.DISABLE_PREPARE_DOCS = 'true';
 
   chokidar.watch(args).on('all', debounce(() => {
+    console.error(chalk.blue(`Detected source changes, rebuilding docs...`));
     proc.spawnSync('npm', ['run', 'prepare-docs'], {
       stdio: 'inherit',
     });
   }, 500));
 
   chokidar.watch(['**/*.yml', '**/*.adoc'], {
-    cwd: component,
+    cwd: componentDir,
   }).on('all', debounce(() => {
+    console.error(chalk.blue(`Detected docs changes, rebuilding site...`));
     build();
+    console.error(chalk.green(`The site is available at http://localhost:${port}`));
   }, 500));
 
 } else {
@@ -103,7 +118,7 @@ function getSource() {
   }
 
   const repoDir = path.dirname(gitDir);
-  const startPath = path.relative(repoDir, component);
+  const startPath = path.relative(repoDir, componentDir);
 
   return {
     url: repoDir,
