@@ -101,9 +101,11 @@ if (command === 'build') {
 }
 
 function getPlaybook() {
+  const component = yaml.safeLoad(fs.readFileSync(path.join(componentDir, 'antora.yml')));
+
   const playbook = yaml.safeLoad(fs.readFileSync(path.join(docsDir, 'playbook.yml')));
-  playbook.content.sources = [ playbook.content.sources[0], getSource() ];
-  // TODO: change site start page
+  playbook.content.sources = [ getSource() ];
+  playbook.site.start_page = `${component.name}::${component.start_page || 'index.adoc'}`;
 
   const localPlaybookFile = path.resolve(docsDir, 'local-playbook.yml');
   fs.writeFileSync(localPlaybookFile, yaml.safeDump(playbook));
