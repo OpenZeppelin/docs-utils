@@ -1,0 +1,16 @@
+{
+  "name": "openzeppelin-docs-preview",
+  "version": "0.0.0",
+  "author": "Francisco Giordano <frangio.1@gmail.com>",
+  "license": "MIT",
+  "files": [],
+  "bin": {
+    "oz-docs": "build-local.js"
+  },
+  "dependencies": {
+    "env-paths": "^2.2.0",
+    "find-up": "^4.1.0",
+    "js-yaml": "^3.13.1",
+    "minimist": "^1.2.0"
+  }
+}
