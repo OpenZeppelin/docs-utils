@@ -154,12 +154,12 @@ function build() {
 }
 
 async function startServer(port) {
-  const portBusy = await isPortReachable(port, { timeout: 100 });
-
   function error(msg = '') {
     console.error(chalk.red(`There has been an error in the server process. ${msg}`));
     process.exit(1);
   }
+
+  const portBusy = await isPortReachable(port, { timeout: 100 });
 
   if (portBusy) {
     error(`Is port ${port} available? Consider using a different port with '-p PORT'.`);
