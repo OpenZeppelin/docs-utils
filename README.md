@@ -30,3 +30,14 @@ the docs are regenerated automatically.
 
 The above should enable local previews of the docs. It's also useful to set up
 docs previews on pull requests. This is done using Netlify Deploy Previews.
+
+Create a `netlify.toml` file at the root of the repo with the following contents.
+
+```toml
+[build]
+command = "npm run docs"
+publish = "build/site"
+```
+
+Then create a Netlify site connected to the repository. Deploy Previews for the
+`master` branch are enabled by default.
