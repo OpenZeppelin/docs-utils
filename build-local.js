@@ -43,7 +43,6 @@ if (fs.existsSync(docsDir)) {
   proc.spawnSync('git', [
     'clone',
     'https://github.com/OpenZeppelin/docs.openzeppelin.com.git',
-    '--branch=build-local',
     '--depth=1',
     docsDir,
   ], {
