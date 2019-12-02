@@ -11,6 +11,7 @@ const yaml = require('js-yaml');
 const findUp = require('find-up');
 const chokidar = require('chokidar');
 const chalk = require('chalk');
+const isPortReachable = require('is-port-reachable');
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
 const {
