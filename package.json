@@ -12,6 +12,7 @@
     "chokidar": "^3.3.0",
     "env-paths": "^2.2.0",
     "find-up": "^4.1.0",
+    "is-port-reachable": "^3.0.0",
     "js-yaml": "^3.13.1",
     "live-server": "^1.2.1",
     "minimist": "^1.2.0"

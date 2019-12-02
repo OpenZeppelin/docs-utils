@@ -68,19 +68,7 @@ if (command === 'build') {
   console.error('The site is available at ./build/site');
 
 } else if (command === 'watch') {
-  const server = proc.spawn(
-    require.resolve('live-server/live-server'),
-    [ `--port=${port}`, '--no-browser', 'build/site' ],
-  );
-
-  server.on('exit', code => {
-    if (code !== 0) {
-      console.error(chalk.red(`There has been an error in the server process. Is port ${port} available? Consider using the '-p PORT' option.`));
-      process.exit(1);
-    }
-  });
-
-  process.on('exit', () => server.kill());
+  startServer(port);
 
   // We will manually run prepare-docs on changes.
   process.env.DISABLE_PREPARE_DOCS = 'true';
@@ -163,4 +151,30 @@ function build() {
     cwd: docsDir,
     stdio: 'inherit',
   });
+}
+
+async function startServer(port) {
+  const portBusy = await isPortReachable(port, { timeout: 100 });
+
+  function error(msg = '') {
+    console.error(chalk.red(`There has been an error in the server process. ${msg}`));
+    process.exit(1);
+  }
+
+  if (portBusy) {
+    error(`Is port ${port} available? Consider using a different port with '-p PORT'.`);
+  } else {
+    const server = proc.spawn(
+      require.resolve('live-server/live-server'),
+      [ `--port=${port}`, '--no-browser', 'build/site' ],
+    );
+
+    server.on('exit', code => {
+      if (code !== 0) {
+        error();
+      }
+    });
+
+    process.on('exit', () => server.kill());
+  }
 }
