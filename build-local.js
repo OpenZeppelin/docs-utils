@@ -73,6 +73,13 @@ if (command === 'build') {
     [ `--port=${port}`, '--no-browser', 'build/site' ],
   );
 
+  server.on('exit', code => {
+    if (code !== 0) {
+      console.error(chalk.red(`There has been an error in the server process. Is port ${port} available? Consider using the '-p PORT' option.`));
+      process.exit(1);
+    }
+  });
+
   process.on('exit', () => server.kill());
 
   // We will manually run prepare-docs on changes.
