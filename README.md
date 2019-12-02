@@ -32,6 +32,8 @@ The above should enable local previews of the docs. It's also useful to set up
 docs previews on pull requests. This is done using Netlify Deploy Previews.
 
 Create a `netlify.toml` file at the root of the repo with the following contents.
+(The command and the path may be slightly different for monorepos or repos using
+yarn.)
 
 ```toml
 [build]
