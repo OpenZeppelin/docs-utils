@@ -156,7 +156,7 @@ function build() {
 
 async function startServer(port) {
   function error(msg = '') {
-    console.error(chalk.red(`There has been an error in the server process. ${msg}`));
+    console.error(chalk.red(`There has been an error in the server process.\n${msg}`));
     process.exit(1);
   }
 
