@@ -70,7 +70,7 @@ if (command === 'build') {
 } else if (command === 'watch') {
   const server = proc.spawn(
     require.resolve('live-server/live-server'),
-    [ `--port=${port}`, 'build/site' ],
+    [ `--port=${port}`, '--no-browser', 'build/site' ],
   );
 
   process.on('exit', () => server.kill());
