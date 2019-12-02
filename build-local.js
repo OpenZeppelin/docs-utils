@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // USAGE:
-//  oz-docs [-c COMPONENT] [watch PATTERNS...]
+//  oz-docs [-c COMPONENT] [-p PORT] [watch [PATTERNS...]]
 
 const path = require('path');
 const fs = require('fs');
@@ -15,6 +15,7 @@ const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });
 
 const {
   c: componentDir = '.',
+  p: port = '8080',
   _: [ command = 'build', ...args ],
 } = require('minimist')(process.argv.slice(2));
 
@@ -68,8 +69,6 @@ if (command === 'build') {
   console.error('The site is available at ./build/site');
 
 } else if (command === 'watch') {
-  const port = '8080';
-
   const server = proc.spawn(
     require.resolve('http-server/bin/http-server'),
     [ '-c-1', `-p${port}`, 'build/site' ],
