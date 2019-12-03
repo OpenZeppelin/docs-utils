@@ -25,23 +25,32 @@ const {
 // Clone docs repo
 
 if (command === 'init') {
-  fs.mkdirSync('docs/modules/ROOT/pages', { recursive: true });
+  fs.mkdirSync(path.join(componentDir, 'modules/ROOT/pages'), { recursive: true });
+
   const name = path.basename(process.cwd());
   const title = startCase(name);
   const version = getDocsVersion();
 
-  writeIfMissing('docs/antora.yml',
+  writeIfMissing(
+    path.join(componentDir, 'antora.yml'),
 `\
 name: ${name}
 title: ${title}
 version: ${version}
 nav:
   - modules/ROOT/nav.adoc
-`
+`,
   );
 
-  writeIfMissing('docs/modules/ROOT/nav.adoc', `* xref:index.adoc[Overview]\n`);
-  writeIfMissing('docs/modules/ROOT/pages/index.adoc', `= ${title}\n`);
+  writeIfMissing(
+    path.join(componentDir, 'modules/ROOT/nav.adoc'),
+    `* xref:index.adoc[Overview]\n`,
+  );
+
+  writeIfMissing(
+    path.join(componentDir, 'modules/ROOT/pages/index.adoc'),
+    `= ${title}\n`,
+  );
 
 } else {
   const docsDir = getDocsDir();
