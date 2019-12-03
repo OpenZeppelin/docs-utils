@@ -12,6 +12,8 @@ const findUp = require('find-up');
 const chokidar = require('chokidar');
 const chalk = require('chalk');
 const isPortReachable = require('is-port-reachable');
+const startCase = require('lodash.startcase');
+
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
 const {
@@ -23,7 +25,23 @@ const {
 // Clone docs repo
 
 if (command === 'init') {
-  console.error('initing');
+  fs.mkdirSync('docs/modules/ROOT/pages', { recursive: true });
+  const name = path.basename(process.cwd());
+  const title = startCase(name);
+  const version = getDocsVersion();
+
+  fs.writeFileSync('docs/antora.yml',
+`\
+name: ${name}
+title: ${title}
+version: ${version}
+nav:
+  - modules/ROOT/nav.adoc
+`
+  );
+
+  fs.writeFileSync('docs/modules/ROOT/nav.adoc', `* xref:index.adoc[Overview]\n`);
+  fs.writeFileSync('docs/modules/ROOT/pages/index.adoc', `= ${title}\n`);
 
 } else {
   const docsDir = getDocsDir();
@@ -185,5 +203,17 @@ function setupDocsDir(docsDir) {
     // so that the built docs are placed here.
     fs.mkdirSync('build', { recursive: true });
     fs.symlinkSync(path.resolve('build'), path.join(docsDir, 'build'));
+  }
+}
+
+function getDocsVersion() {
+  const version = require('./package.json').version;
+
+  const [x, y, z] = version.split('.');
+
+  if (x === '0') {
+    return `${x}.${y}`;
+  } else {
+    return `${x}.x`;
   }
 }

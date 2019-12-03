@@ -43,3 +43,8 @@ publish = "build/site"
 
 Then create a Netlify site connected to the repository. Deploy Previews for the
 `master` branch are enabled by default.
+
+### Initializing docs on a new repo
+
+This package also provides the `oz-docs init` command, which will create the
+necessary directories and files to include use a repo in the docs site.
