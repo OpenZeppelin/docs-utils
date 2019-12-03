@@ -48,10 +48,10 @@ nav:
 
   setupDocsDir(docsDir);
 
-  const playbook = getPlaybook();
+  const playbook = makePlaybook(docsDir);
 
   if (command === 'build') {
-    build();
+    build(docsDir, playbook);
     console.error('The site is available at ./build/site');
 
   } else if (command === 'watch') {
@@ -71,7 +71,7 @@ nav:
       cwd: componentDir,
     }).on('all', debounce(() => {
       console.error(chalk.blue(`Detected docs changes, rebuilding site...`));
-      build();
+      build(docsDir, playbook);
       console.error(chalk.green(`The site is available at http://localhost:${port}`));
     }, 500));
 
@@ -81,7 +81,7 @@ nav:
   }
 }
 
-function getPlaybook() {
+function makePlaybook(docsDir) {
   const component = yaml.safeLoad(fs.readFileSync(path.join(componentDir, 'antora.yml')));
 
   const playbook = yaml.safeLoad(fs.readFileSync(path.join(docsDir, 'playbook.yml')));
@@ -117,7 +117,7 @@ function getDocsDir() {
   return path.join(paths.temp, hash);
 }
 
-function getDocsRevision() {
+function getDocsRevision(docsDir) {
   return proc.execFileSync('git', [ 'rev-parse', 'HEAD' ], {
     cwd: docsDir,
     encoding: 'utf8',
@@ -134,7 +134,7 @@ function debounce(fn, delay) {
   }
 }
 
-function build() {
+function build(docsDir, playbook) {
   proc.spawnSync('npm', ['run', 'build:custom', playbook], {
     cwd: docsDir,
     stdio: 'inherit',
@@ -169,14 +169,14 @@ async function startServer(port) {
 
 function setupDocsDir(docsDir) {
   if (fs.existsSync(docsDir)) {
-    const rev1 = getDocsRevision();
+    const rev1 = getDocsRevision(docsDir);
 
     proc.spawnSync('git', [ 'pull' ], {
       stdio: 'inherit',
       cwd: docsDir,
     });
 
-    const rev2 = getDocsRevision();
+    const rev2 = getDocsRevision(docsDir);
 
     if (rev1 !== rev2) {
       proc.spawnSync('npx', ['yarn'], {
