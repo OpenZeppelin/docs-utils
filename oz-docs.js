@@ -17,7 +17,7 @@ const startCase = require('lodash.startcase');
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
 const {
-  c: componentDir = '.',
+  c: componentDir = 'docs',
   p: port = '8080',
   _: [ command = 'build', ...args ],
 } = require('minimist')(process.argv.slice(2));
