@@ -1,7 +1,17 @@
-This repo contains the scripts used for docs previews in pull requests across
+This repo contains utilities for setting up and previewing documentation across
 OpenZeppelin projects.
 
-### How to use
+*This will only be useful for official OpenZeppelin projects. If you are
+looking to generate documentation for your Solidity project, check out
+`solidity-docgen`.*
+
+### Initial setup (`oz-docs init`)
+
+The `oz-docs init` command will create the necessary directories and files to
+include a repo in the docs site, and to preview it with the steps in the next
+section.
+
+### Previewing the site locally (`oz-docs build`, `oz-docs watch`)
 
 Add a dev dependency on this repo.
 
@@ -28,6 +38,8 @@ the docs are regenerated automatically.
    },
 ```
 
+### Setting up docs previews on pull requests
+
 The above should enable local previews of the docs. It's also useful to set up
 docs previews on pull requests. This is done using Netlify Deploy Previews.
 
@@ -44,7 +56,7 @@ publish = "build/site"
 Then create a Netlify site connected to the repository. Deploy Previews for the
 `master` branch are enabled by default.
 
-### Initializing docs on a new repo
-
-This package also provides the `oz-docs init` command, which will create the
-necessary directories and files to include use a repo in the docs site.
+You will want to disable the Netlify's checks on pull requests, since they are
+only useful for production sites. In the site settings on Netlify, go to "Build
+& Deploy", and at the bottom of the page go to "Deploy notifications". Delete
+the three notifications that say "rich details".
