@@ -30,7 +30,7 @@ if (command === 'init') {
   const title = startCase(name);
   const version = getDocsVersion();
 
-  fs.writeFileSync('docs/antora.yml',
+  writeIfMissing('docs/antora.yml',
 `\
 name: ${name}
 title: ${title}
@@ -40,8 +40,8 @@ nav:
 `
   );
 
-  fs.writeFileSync('docs/modules/ROOT/nav.adoc', `* xref:index.adoc[Overview]\n`);
-  fs.writeFileSync('docs/modules/ROOT/pages/index.adoc', `= ${title}\n`);
+  writeIfMissing('docs/modules/ROOT/nav.adoc', `* xref:index.adoc[Overview]\n`);
+  writeIfMissing('docs/modules/ROOT/pages/index.adoc', `= ${title}\n`);
 
 } else {
   const docsDir = getDocsDir();
@@ -215,5 +215,16 @@ function getDocsVersion() {
     return `${x}.${y}`;
   } else {
     return `${x}.x`;
+  }
+}
+
+function writeIfMissing(file, contents) {
+  try {
+    fs.writeFileSync(file, contents, { flag: 'wx' });
+  } catch (e) {
+    // ignore an error caused by an existing file
+    if (e.code !== 'EEXIST') {
+      throw e;
+    }
   }
 }
