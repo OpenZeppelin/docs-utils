@@ -6,7 +6,7 @@
   "license": "MIT",
   "files": [],
   "bin": {
-    "oz-docs": "build-local.js"
+    "oz-docs": "oz-docs.js"
   },
   "dependencies": {
     "chalk": "^3.0.0",
