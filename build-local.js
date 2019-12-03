@@ -24,42 +24,7 @@ const {
 
 const docsDir = getDocsDir();
 
-if (fs.existsSync(docsDir)) {
-  const rev1 = getDocsRevision();
-
-  proc.spawnSync('git', [ 'pull' ], {
-    stdio: 'inherit',
-    cwd: docsDir,
-  });
-
-  const rev2 = getDocsRevision();
-
-  if (rev1 !== rev2) {
-    proc.spawnSync('npx', ['yarn'], {
-      cwd: docsDir,
-      stdio: 'inherit',
-    });
-  }
-} else {
-  proc.spawnSync('git', [
-    'clone',
-    'https://github.com/OpenZeppelin/docs.openzeppelin.com.git',
-    '--depth=1',
-    docsDir,
-  ], {
-    stdio: 'inherit',
-  });
-
-  proc.spawnSync('npx', ['yarn'], {
-    cwd: docsDir,
-    stdio: 'inherit',
-  });
-
-  // We create a build directory in cwd and a symlink from the docs dir to it,
-  // so that the built docs are placed here.
-  fs.mkdirSync('build', { recursive: true });
-  fs.symlinkSync(path.resolve('build'), path.join(docsDir, 'build'));
-}
+setupDocsDir(docsDir);
 
 const playbook = getPlaybook();
 
@@ -177,5 +142,44 @@ async function startServer(port) {
     });
 
     process.on('exit', () => server.kill());
+  }
+}
+
+function setupDocsDir(docsDir) {
+  if (fs.existsSync(docsDir)) {
+    const rev1 = getDocsRevision();
+
+    proc.spawnSync('git', [ 'pull' ], {
+      stdio: 'inherit',
+      cwd: docsDir,
+    });
+
+    const rev2 = getDocsRevision();
+
+    if (rev1 !== rev2) {
+      proc.spawnSync('npx', ['yarn'], {
+        cwd: docsDir,
+        stdio: 'inherit',
+      });
+    }
+  } else {
+    proc.spawnSync('git', [
+      'clone',
+      'https://github.com/OpenZeppelin/docs.openzeppelin.com.git',
+      '--depth=1',
+      docsDir,
+    ], {
+      stdio: 'inherit',
+    });
+
+    proc.spawnSync('npx', ['yarn'], {
+      cwd: docsDir,
+      stdio: 'inherit',
+    });
+
+    // We create a build directory in cwd and a symlink from the docs dir to it,
+    // so that the built docs are placed here.
+    fs.mkdirSync('build', { recursive: true });
+    fs.symlinkSync(path.resolve('build'), path.join(docsDir, 'build'));
   }
 }
