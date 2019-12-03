@@ -114,7 +114,7 @@ function getDocsDir() {
   const hash = crypto.createHash('sha1')
     .update(process.cwd())
     .digest('hex');
-  return path.join(paths.temp, hash);
+  return path.join(paths.cache, hash);
 }
 
 function getDocsRevision(docsDir) {
