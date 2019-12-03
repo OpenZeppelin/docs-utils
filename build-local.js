@@ -22,41 +22,45 @@ const {
 
 // Clone docs repo
 
-const docsDir = getDocsDir();
-
-setupDocsDir(docsDir);
-
-const playbook = getPlaybook();
-
-if (command === 'build') {
-  build();
-
-  console.error('The site is available at ./build/site');
-
-} else if (command === 'watch') {
-  startServer(port);
-
-  // We will manually run prepare-docs on changes.
-  process.env.DISABLE_PREPARE_DOCS = 'true';
-
-  chokidar.watch(args).on('all', debounce(() => {
-    console.error(chalk.blue(`Detected source changes, rebuilding docs...`));
-    proc.spawnSync('npm', ['run', 'prepare-docs'], {
-      stdio: 'inherit',
-    });
-  }, 500));
-
-  chokidar.watch(['**/*.yml', '**/*.adoc'], {
-    cwd: componentDir,
-  }).on('all', debounce(() => {
-    console.error(chalk.blue(`Detected docs changes, rebuilding site...`));
-    build();
-    console.error(chalk.green(`The site is available at http://localhost:${port}`));
-  }, 500));
+if (command === 'init') {
+  console.error('initing');
 
 } else {
-  console.error(`Unknown command ${command}`);
-  process.exit(1);
+  const docsDir = getDocsDir();
+
+  setupDocsDir(docsDir);
+
+  const playbook = getPlaybook();
+
+  if (command === 'build') {
+    build();
+    console.error('The site is available at ./build/site');
+
+  } else if (command === 'watch') {
+    startServer(port);
+
+    // We will manually run prepare-docs on changes.
+    process.env.DISABLE_PREPARE_DOCS = 'true';
+
+    chokidar.watch(args).on('all', debounce(() => {
+      console.error(chalk.blue(`Detected source changes, rebuilding docs...`));
+      proc.spawnSync('npm', ['run', 'prepare-docs'], {
+        stdio: 'inherit',
+      });
+    }, 500));
+
+    chokidar.watch(['**/*.yml', '**/*.adoc'], {
+      cwd: componentDir,
+    }).on('all', debounce(() => {
+      console.error(chalk.blue(`Detected docs changes, rebuilding site...`));
+      build();
+      console.error(chalk.green(`The site is available at http://localhost:${port}`));
+    }, 500));
+
+  } else {
+    console.error(`Unknown command ${command}`);
+    process.exit(1);
+  }
 }
 
 function getPlaybook() {
