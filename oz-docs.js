@@ -177,6 +177,10 @@ async function startServer(port) {
 }
 
 function setupDocsDir(docsDir) {
+  // We create a build directory in cwd and a symlink from the docs dir to it,
+  // so that the built docs are placed here.
+  fs.mkdirSync('build', { recursive: true });
+
   if (fs.existsSync(docsDir)) {
     const rev1 = getDocsRevision(docsDir);
 
@@ -208,9 +212,6 @@ function setupDocsDir(docsDir) {
       stdio: 'inherit',
     });
 
-    // We create a build directory in cwd and a symlink from the docs dir to it,
-    // so that the built docs are placed here.
-    fs.mkdirSync('build', { recursive: true });
     fs.symlinkSync(path.resolve('build'), path.join(docsDir, 'build'));
   }
 }
