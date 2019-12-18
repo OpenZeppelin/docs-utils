@@ -217,7 +217,7 @@ function setupDocsDir(docsDir) {
 }
 
 function getDocsVersion() {
-  const version = require('./package.json').version;
+  const version = require(process.cwd() + '/package.json').version;
 
   const [x, y, z] = version.split('.');
 
