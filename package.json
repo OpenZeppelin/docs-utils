@@ -4,7 +4,9 @@
   "author": "Francisco Giordano <frangio.1@gmail.com>",
   "private": true,
   "license": "MIT",
-  "files": [],
+  "files": [
+    "oz-docs.js"
+  ],
   "bin": {
     "oz-docs": "oz-docs.js"
   },
