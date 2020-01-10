@@ -54,7 +54,7 @@ if (command === 'init') {
       });
     }, 500));
 
-    componentDirs.forEach(c => watch(c, docsDir));
+    componentDirs.forEach(c => watch(c, docsDir, playbook));
 
   } else {
     console.error(`Unknown command ${command}`);
@@ -240,7 +240,7 @@ nav:
   );
 }
 
-function watch(componentDir) {
+function watch(componentDir, docsDir, playbook) {
   chokidar.watch(['**/*.yml', '**/*.adoc'], {
     cwd: componentDir,
   }).on('all', debounce(() => {
