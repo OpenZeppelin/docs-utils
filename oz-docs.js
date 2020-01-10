@@ -24,40 +24,17 @@ const {
 
 // Clone docs repo
 
+const componentDirs = Array.isArray(componentDir) ? componentDir : [componentDir];
+
 if (command === 'init') {
-  fs.mkdirSync(path.join(componentDir, 'modules/ROOT/pages'), { recursive: true });
-
-  const name = path.basename(process.cwd());
-  const title = startCase(name);
-  const version = getDocsVersion();
-
-  writeIfMissing(
-    path.join(componentDir, 'antora.yml'),
-`\
-name: ${name}
-title: ${title}
-version: ${version}
-nav:
-  - modules/ROOT/nav.adoc
-`,
-  );
-
-  writeIfMissing(
-    path.join(componentDir, 'modules/ROOT/nav.adoc'),
-    `* xref:index.adoc[Overview]\n`,
-  );
-
-  writeIfMissing(
-    path.join(componentDir, 'modules/ROOT/pages/index.adoc'),
-    `= ${title}\n`,
-  );
+  componentDirs.forEach(init);
 
 } else {
   const docsDir = getDocsDir();
 
   setupDocsDir(docsDir);
 
-  const playbook = makePlaybook(docsDir);
+  const playbook = makePlaybook(docsDir, componentDirs);
 
   if (command === 'build') {
     build(docsDir, playbook);
@@ -69,20 +46,15 @@ nav:
     // We will manually run prepare-docs on changes.
     process.env.DISABLE_PREPARE_DOCS = 'true';
 
-    chokidar.watch(args).on('all', debounce(() => {
+    chokidar.watch(args).on('all', debounce((ev, file) => {
       console.error(chalk.blue(`Detected source changes, rebuilding docs...`));
       proc.spawnSync('npm', ['run', 'prepare-docs'], {
         stdio: 'inherit',
+        cwd: path.dirname(file),
       });
     }, 500));
 
-    chokidar.watch(['**/*.yml', '**/*.adoc'], {
-      cwd: componentDir,
-    }).on('all', debounce(() => {
-      console.error(chalk.blue(`Detected docs changes, rebuilding site...`));
-      build(docsDir, playbook);
-      console.error(chalk.green(`The site is available at http://localhost:${port}`));
-    }, 500));
+    componentDirs.forEach(c => watch(c, docsDir, playbook));
 
   } else {
     console.error(`Unknown command ${command}`);
@@ -90,19 +62,19 @@ nav:
   }
 }
 
-function makePlaybook(docsDir) {
-  const component = yaml.safeLoad(fs.readFileSync(path.join(componentDir, 'antora.yml')));
+function makePlaybook(docsDir, componentDirs) {
+  const components = componentDirs.map(c => yaml.safeLoad(fs.readFileSync(path.join(c, 'antora.yml'))));
 
   const playbook = yaml.safeLoad(fs.readFileSync(path.join(docsDir, 'playbook.yml')));
-  playbook.content.sources = [ getSource() ];
-  playbook.site.start_page = `${component.name}::${component.start_page || 'index.adoc'}`;
+  playbook.content.sources = componentDirs.map(getSource);
+  playbook.site.start_page = `${components[0].name}::${components[0].start_page || 'index.adoc'}`;
 
   const localPlaybookFile = path.resolve(docsDir, 'local-playbook.yml');
   fs.writeFileSync(localPlaybookFile, yaml.safeDump(playbook));
   return localPlaybookFile;
 }
 
-function getSource() {
+function getSource(componentDir) {
   const gitDir = findUp.sync('.git', { type: 'directory' });
 
   if (gitDir === undefined) {
@@ -135,10 +107,10 @@ function getDocsRevision(docsDir) {
 
 function debounce(fn, delay) {
   let timeout;
-  return function () {
+  return function (...args) {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-      fn.apply(this);
+      fn.apply(this, args);
     }, delay);;
   }
 }
@@ -237,4 +209,43 @@ function writeIfMissing(file, contents) {
       throw e;
     }
   }
+}
+
+function init(componentDir) {
+  fs.mkdirSync(path.join(componentDir, 'modules/ROOT/pages'), { recursive: true });
+
+  const name = path.basename(process.cwd());
+  const title = startCase(name);
+  const version = getDocsVersion();
+
+  writeIfMissing(
+    path.join(componentDir, 'antora.yml'),
+`\
+name: ${name}
+title: ${title}
+version: ${version}
+nav:
+  - modules/ROOT/nav.adoc
+`,
+  );
+
+  writeIfMissing(
+    path.join(componentDir, 'modules/ROOT/nav.adoc'),
+    `* xref:index.adoc[Overview]\n`,
+  );
+
+  writeIfMissing(
+    path.join(componentDir, 'modules/ROOT/pages/index.adoc'),
+    `= ${title}\n`,
+  );
+}
+
+function watch(componentDir, docsDir, playbook) {
+  chokidar.watch(['**/*.yml', '**/*.adoc'], {
+    cwd: componentDir,
+  }).on('all', debounce(() => {
+    console.error(chalk.blue(`Detected docs changes, rebuilding site...`));
+    build(docsDir, playbook);
+    console.error(chalk.green(`The site is available at http://localhost:${port}`));
+  }, 500));
 }
