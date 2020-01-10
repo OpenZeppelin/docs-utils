@@ -54,7 +54,7 @@ if (command === 'init') {
       });
     }, 500));
 
-    componentDirs.forEach(watch);
+    componentDirs.forEach(c => watch(c, docsDir));
 
   } else {
     console.error(`Unknown command ${command}`);
