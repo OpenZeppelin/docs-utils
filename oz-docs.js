@@ -110,7 +110,7 @@ function debounce(fn, delay) {
   return function (...args) {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-      fn.apply(this, ...args);
+      fn.apply(this, args);
     }, delay);;
   }
 }
