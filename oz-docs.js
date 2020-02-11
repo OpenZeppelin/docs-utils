@@ -2,6 +2,7 @@
 
 // USAGE:
 //  oz-docs [-c COMPONENT] [-p PORT] [watch [PATTERNS...]]
+//  oz-docs [-c COMPONENT] [--exact] update-version
 
 const path = require('path');
 const fs = require('fs');
@@ -19,6 +20,7 @@ const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });
 const {
   c: componentDir = 'docs',
   p: port = '8080',
+  exact = false,
   _: [ command = 'build', ...args ],
 } = require('minimist')(process.argv.slice(2));
 
@@ -28,6 +30,9 @@ const componentDirs = Array.isArray(componentDir) ? componentDir : [componentDir
 
 if (command === 'init') {
   componentDirs.forEach(init);
+
+} else if (command === 'update-version') {
+  componentDirs.forEach(updateVersion);
 
 } else {
   const docsDir = getDocsDir();
@@ -193,7 +198,7 @@ function getDocsVersion() {
 
   const [x, y, z] = version.split('.');
 
-  if (x === '0') {
+  if (x === '0' || exact) {
     return `${x}.${y}`;
   } else {
     return `${x}.x`;
@@ -209,6 +214,13 @@ function writeIfMissing(file, contents) {
       throw e;
     }
   }
+}
+
+function updateVersion(componentDir) {
+  const compPath = path.join(componentDir, 'antora.yml');
+  const comp = yaml.safeLoad(fs.readFileSync(compPath));
+  comp.version = getDocsVersion();
+  fs.writeFileSync(compPath, yaml.safeDump(comp));
 }
 
 function init(componentDir) {
