@@ -224,8 +224,10 @@ function updateVersion(componentDir) {
 
   // If we're in an 'npm version' command, and if npm is creating a git tag, we
   // add the changed file to the git index.
-  const { npm_lifecycle_event, npm_config_git_tag_version } = process.env;
-  if (npm_lifecycle_event === 'version' && npm_config_git_tag_version === 'true') {
+  const { npm_lifecycle_event: npm_event } = process.env;
+  // npm and yarn seem to use two different variable names.
+  const git_tag = process.env.npm_config_git_tag_version || process.env.npm_config_version_git_tag;
+  if (npm_event === 'version' && git_tag === 'true') {
     proc.spawnSync('git', ['add', compPath], {
       stdio: 'inherit',
     });
