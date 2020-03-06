@@ -1,7 +1,7 @@
-This repo contains utilities for setting up and previewing documentation across
-OpenZeppelin projects.
+Utilities for setting up and previewing documentation across OpenZeppelin
+projects.
 
-> This package is only useful for official OpenZeppelin projects.
+> **This is an internal toool for OpenZeppelin projects.**
 >
 > If you are looking to generate documentation for your Solidity project, check
 > out [`solidity-docgen`](https://github.com/OpenZeppelin/solidity-docgen).
