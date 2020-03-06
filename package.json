@@ -1,8 +1,7 @@
 {
-  "name": "openzeppelin-docs-utils",
-  "version": "0.0.0",
+  "name": "@openzeppelin/docs-utils",
+  "version": "0.1.0",
   "author": "Francisco Giordano <frangio.1@gmail.com>",
-  "private": true,
   "license": "MIT",
   "files": [
     "oz-docs.js"
