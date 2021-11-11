@@ -17,8 +17,8 @@ section.
 Add a dev dependency on this repo.
 
 ```
-npm install --save-dev github:OpenZeppelin/docs-preview-script
-yarn add --dev github:OpenZeppelin/docs-preview-script
+npm install --save-dev github:OpenZeppelin/docs-utils
+# or yarn add --dev github:OpenZeppelin/docs-utils
 ```
 
 Use the `oz-docs` executable in the package's scripts. You need to provide the
