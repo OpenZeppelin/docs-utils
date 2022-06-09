@@ -73,6 +73,9 @@ function makePlaybook(docsDir, componentDirs) {
   const playbook = yaml.safeLoad(fs.readFileSync(path.join(docsDir, 'playbook.yml')));
   playbook.content.sources = componentDirs.map(getSource);
   playbook.site.start_page = `${components[0].name}::${components[0].start_page || 'index.adoc'}`;
+  if (playbook.urls) {
+    playbook.urls.html_extension_style = 'default';
+  }
 
   const localPlaybookFile = path.resolve(docsDir, 'local-playbook.yml');
   fs.writeFileSync(localPlaybookFile, yaml.safeDump(playbook));
