@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // USAGE:
-//  oz-docs [-c COMPONENT] [-p PORT] [watch [PATTERNS...]]
+//  oz-docs [-c COMPONENT] [-p PORT] [--verbose] [watch [PATTERNS...]]
 //  oz-docs [-c COMPONENT] [--exact] update-version
 
 const path = require('path');
@@ -14,6 +14,7 @@ const chokidar = require('chokidar');
 const chalk = require('chalk');
 const isPortReachable = require('is-port-reachable');
 const startCase = require('lodash.startcase');
+const liveServer = require('live-server');
 
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
@@ -21,6 +22,7 @@ const {
   c: componentDir = 'docs',
   p: port = '8080',
   exact = false,
+  verbose = false,
   _: [ command = 'build', ...args ],
 } = require('minimist')(process.argv.slice(2));
 
@@ -141,17 +143,14 @@ async function startServer(port) {
   if (portBusy) {
     error(`Is port ${port} available? Consider using a different port with '-p PORT'.`);
   } else {
-    const server = proc.spawn(
-      require.resolve('live-server/live-server'),
-      [ `--port=${port}`, '--no-browser', 'build/site' ],
-    );
-
-    server.on('exit', code => {
-      if (code !== 0) {
-        error();
-      }
+    const server = liveServer.start({
+      port,
+      open: false,
+      root: 'build/site',
+      logLevel: verbose ? 2 : 0,
     });
 
+    server.on('error', error);
     process.on('exit', () => server.kill());
   }
 }
@@ -272,6 +271,6 @@ function watch(componentDir, docsDir, playbook) {
   }).on('all', debounce(() => {
     console.error(chalk.blue(`Detected docs changes, rebuilding site...`));
     build(docsDir, playbook);
-    console.error(chalk.green(`The site is available at http://localhost:${port}`));
+    console.error(chalk.bold.green(`The site is available at http://localhost:${port}`));
   }, 500));
 }
