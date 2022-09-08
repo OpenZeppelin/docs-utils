@@ -1,7 +1,7 @@
 Utilities for setting up and previewing documentation across OpenZeppelin
 projects.
 
-> **This is an internal toool for OpenZeppelin projects.**
+> **This is an internal tool for OpenZeppelin projects.**
 >
 > If you are looking to generate documentation for your Solidity project, check
 > out [`solidity-docgen`](https://github.com/OpenZeppelin/solidity-docgen).
