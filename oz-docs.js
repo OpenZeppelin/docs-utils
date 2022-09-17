@@ -14,7 +14,7 @@ const chokidar = require('chokidar');
 const chalk = require('chalk');
 const isPortReachable = require('is-port-reachable');
 const startCase = require('lodash.startcase');
-const liveServer = require('live-server');
+const servbot = require('@frangio/servbot').default;
 
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
@@ -143,22 +143,23 @@ async function startServer(port) {
   if (portBusy) {
     error(`Is port ${port} available? Consider using a different port with '-p PORT'.`);
   } else {
-    const server = liveServer.start({
-      port,
-      open: false,
-      root: 'build/site',
-      logLevel: verbose ? 2 : 0,
+    const root = 'build/site';
+    const server = servbot({
+      verbose,
+      root,
+      reload: true,
     });
+    server.listen(port);
+    chokidar.watch(root).on('all', () => server.reload());
 
-    server.on('error', error);
-    process.on('exit', () => server.kill());
+    process.on('exit', () => server.close());
   }
 }
 
 function setupDocsDir(docsDir) {
   // We create a build directory in cwd and a symlink from the docs dir to it,
   // so that the built docs are placed here.
-  fs.mkdirSync('build', { recursive: true });
+  fs.mkdirSync('build/site', { recursive: true });
 
   if (fs.existsSync(docsDir)) {
     const rev1 = getDocsRevision(docsDir);

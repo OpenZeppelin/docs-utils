@@ -10,13 +10,13 @@
     "oz-docs": "oz-docs.js"
   },
   "dependencies": {
+    "@frangio/servbot": "^0.2.5",
     "chalk": "^3.0.0",
-    "chokidar": "^3.3.0",
+    "chokidar": "^3.5.3",
     "env-paths": "^2.2.0",
     "find-up": "^4.1.0",
     "is-port-reachable": "^3.0.0",
     "js-yaml": "^3.13.1",
-    "live-server": "^1.2.1",
     "lodash.startcase": "^4.4.0",
     "minimist": "^1.2.0"
   }
