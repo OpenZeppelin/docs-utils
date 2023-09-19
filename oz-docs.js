@@ -197,15 +197,19 @@ function setupDocsDir(docsDir) {
 }
 
 function getDocsVersion() {
-  const version = require(process.cwd() + '/package.json').version;
+  const pkgVersion = require(process.cwd() + '/package.json').version;
 
-  const [x, y, z] = version.split('.');
+  const [x, y, z] = pkgVersion.split('.');
 
-  if (x === '0' || exact) {
-    return `${x}.${y}`;
-  } else {
-    return `${x}.x`;
+  const suffix = z.match(/-[^.]*/)?.[0];
+  const prerelease = suffix !== undefined;
+
+  let version = (x === '0' || exact) ? `${x}.${y}` : `${x}.x`;
+  if (prerelease) {
+    version += suffix;
   }
+
+  return { version, prerelease };
 }
 
 function writeIfMissing(file, contents) {
@@ -220,9 +224,12 @@ function writeIfMissing(file, contents) {
 }
 
 function updateVersion(componentDir) {
+  const { version, prerelease } = getDocsVersion();
+
   const compPath = path.join(componentDir, 'antora.yml');
   const comp = yaml.safeLoad(fs.readFileSync(compPath));
-  comp.version = getDocsVersion();
+  comp.version = version;
+  comp.prerelease = prerelease;
   fs.writeFileSync(compPath, yaml.safeDump(comp));
 
   // If we're in an 'npm version' command, and if npm is creating a git tag, we
@@ -242,7 +249,7 @@ function init(componentDir) {
 
   const name = path.basename(process.cwd());
   const title = startCase(name);
-  const version = getDocsVersion();
+  const { version, prerelease } = getDocsVersion();
 
   writeIfMissing(
     path.join(componentDir, 'antora.yml'),
@@ -250,6 +257,7 @@ function init(componentDir) {
 name: ${name}
 title: ${title}
 version: ${version}
+prerelease: ${prerelease}
 nav:
   - modules/ROOT/nav.adoc
 `,
