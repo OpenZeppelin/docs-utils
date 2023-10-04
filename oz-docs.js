@@ -77,6 +77,7 @@ function makePlaybook(docsDir, componentDirs) {
   playbook.site.start_page = `${components[0].name}::${components[0].start_page || 'index.adoc'}`;
   if (playbook.urls) {
     playbook.urls.html_extension_style = 'default';
+    playbook.urls.redirect_facility = 'static';
   }
 
   const localPlaybookFile = path.resolve(docsDir, 'local-playbook.yml');
