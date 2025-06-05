@@ -10,7 +10,7 @@
     "oz-docs": "oz-docs.js"
   },
   "dependencies": {
-    "@frangio/servbot": "^0.2.5",
+    "@frangio/servbot": "^0.3.0-1",
     "chalk": "^3.0.0",
     "chokidar": "^3.5.3",
     "env-paths": "^2.2.0",
