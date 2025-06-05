@@ -14,7 +14,7 @@ const chokidar = require('chokidar');
 const chalk = require('chalk');
 const isPortReachable = require('is-port-reachable');
 const startCase = require('lodash.startcase');
-const servbot = require('@frangio/servbot').default;
+const servbot = require('@frangio/servbot');
 
 const paths = require('env-paths')('openzeppelin-docs-preview', { suffix: '' });;
 
@@ -149,11 +149,9 @@ async function startServer(port) {
       verbose,
       root,
       reload: true,
+      port,
     });
-    server.listen(port);
     chokidar.watch(root).on('all', () => server.reload());
-
-    process.on('exit', () => server.close());
   }
 }
 
